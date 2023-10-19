@@ -1,8 +1,8 @@
 
 <template>
-  <div class="drone-login">
-    <!-- <div class="logo"><img src="../assets/imgs/Logo.png" width="180px" /></div> -->
-    <!-- <div class="font"><span>简历解析服务</span></div> -->
+  <div class="main">
+    <div class="logo"><img src="../assets/imgs/Logo.png" width="180px" /></div>
+    <div class="font"><span>简历解析服务</span></div>
     <el-upload
       class="upload"
       action="http://localhost:8090/resume/import"
@@ -13,11 +13,12 @@
       :before-remove="beforeRemove"
       :limit="1"
       :on-exceed="handleExceed"
+      :on-success="handleSuccess"
       :file-list="fileList"
       :auto-upload="false"
     >
       <el-button class="btn" size="small">选择文件</el-button>
-      <div slot="tip" class="el-upload__tip">只能上传 .zip 文件</div>
+      <div slot="tip" class="el-upload__tip" style="color:white">只能上传 .zip 文件</div>
     </el-upload>
     <el-button class="btn" size="small" type="primary" @click="upload"
       >点击上传</el-button
@@ -27,26 +28,26 @@
       size="small"
       type="primary"
       @click="download"
-      :disabled="path === ''"
-      >{{ "path === ''" ? "正在处理" : "下载处理结果" }}</el-button
+      :disabled="path === 0||path==1"
+      >{{path===1 ? "正在处理" : "下载处理结果" }}</el-button
     >
 
-    <!-- <div class="footer">
+    <div class="footer">
       <hr />
       技术支持：nitaotao@zpmc.com
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'vue'
+import axios from 'axios'
 export default {
   name: "indelx-page",
   components: {},
   data() {
     return {
       fileList: [],
-      path: "",
+      path: 0,
     };
   },
   computed: {},
@@ -55,7 +56,7 @@ export default {
   methods: {
     async download() {
       try {
-        const response = await axios.get('http://localhost:8090/resume/export', {
+        const response = await axios.get('http://localhost:8090/resume/export/'+this.path, {
           responseType: 'blob', // 设置响应数据类型为二进制
         });
 
@@ -77,7 +78,7 @@ export default {
     async  upload() {
       if (this.$refs.upload.uploadFiles.length > 0) {
         this.$refs.upload.submit();
-        console.log(this.$refs.upload);
+        this.path=1
       } else {
         this.$message({
           message: "请先添加文件",
@@ -90,6 +91,9 @@ export default {
     },
     handlePreview(file) {
       console.log(file);
+    },
+    handleSuccess(response) {
+      this.path=response.message
     },
     handleExceed(files, fileList) {
       this.$message.warning(
@@ -107,7 +111,8 @@ export default {
 </script>
 
 <style scoped>
-.drone-login {
+
+.main {
   background: url("https://img2.baidu.com/it/u=2931821434,3562319821&fm=253&fmt=auto&app=138&f=PNG?w=500&h=1003");
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -115,17 +120,19 @@ export default {
   height: 100%;
   width: 100%;
   top: 0;
+  left:0;
 }
 .upload {
   margin-left: 40%;
   margin-top: 5%;
   width: 20%;
+  color: white;
 }
 .btn {
-  margin: 10px;
+  margin: 2%;
 }
 img {
-  margin-top: 30px;
+  margin-top: 4%;
   background-repeat: no-repeat;
 }
 .font {

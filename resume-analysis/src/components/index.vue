@@ -3,6 +3,13 @@
   <div class="main">
     <div class="logo"><img src="../assets/imgs/Logo.png" width="180px" /></div>
     <div class="font"><span>简历解析服务</span></div>
+    <div class="tip" >
+      <pre>
+        使用说明：把需要解析的简历pdf按部门文件夹分类，再一起压缩成 .zip 上传。
+        功能介绍：可根据提供的简历，整理出各部门的excel统计表格。主要采集 姓名、性别、专业、学校、最高学历、学校是否在名录内、手机号码、邮箱信息，并把简历名称按（姓名 学校/不在名录内）命名。
+      </pre>
+    </div>
+
     <el-upload
       class="upload"
       action="http://localhost:8090/resume/import"
@@ -158,5 +165,12 @@ img {
   margin-inline-start: 0px;
   margin-inline-end: 0px;
   font-family: "微软雅黑", SYHT, "Microsoft Yahei", Arial, Helvetica, sans-serif;
+}
+.tip{
+  color: white;
+  position: fixed;
+  width: 300px;
+  left: -1%;
+  bottom: 8%;
 }
 </style>

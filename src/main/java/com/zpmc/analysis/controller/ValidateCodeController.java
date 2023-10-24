@@ -1,9 +1,11 @@
 package com.zpmc.analysis.controller;
 
+import com.zpmc.analysis.dto.ValidateCodeDto;
 import com.zpmc.analysis.service.ValidateCodeService;
 import com.zpmc.analysis.utils.ServerResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +25,9 @@ public class ValidateCodeController {
     @PostMapping("/getCode")
     public ServerResponse getCode(String oldUuid) throws IOException {
         return validateCodeService.createCapcha(oldUuid);
+    }
+    @PostMapping("/checkCode")
+    public ServerResponse checkCode(@RequestBody ValidateCodeDto validateCodeDto) throws IOException {
+        return ServerResponse.init().data(validateCodeService.checkCapcha(validateCodeDto.getImg(), validateCodeDto.getUuid()));
     }
 }

@@ -103,6 +103,9 @@ public class ValidateCodeServiceImpl implements ValidateCodeService {
      */
     @Override
     public Boolean checkCapcha(String code, String uuid) {
+        System.out.println("***********");
+        System.out.println(code);
+        System.out.println(uuid);
         if (StringUtils.isEmpty(code)) {
             return false;
         }

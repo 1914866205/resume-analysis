@@ -48,17 +48,14 @@
     <el-dialog
       title="防刷校验"
       :visible.sync="dialogVisible"
-      width="30%"
+      width="15%"
       :before-close="handleClose"
+      :modal-append-to-body="false"
     >
-      <el-input type="text" v-model="code" placeholder="请输入验证码" />
+      <el-input type="text" v-model="resCode" placeholder="请输入验证码" />
       <img class="code-image" :src="codeUrl" alt="验证码" @click="getCode" />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="confirmUpload">确 定</el-button>
     </el-dialog>
   </div>
 </template>
@@ -72,9 +69,10 @@ export default {
     return {
       fileList: [],
       path: 0,
-      dialogVisible: true,
+      dialogVisible: false,
       code: "",
       codeUrl: "",
+      resCode: "",
     };
   },
   computed: {},
@@ -89,10 +87,8 @@ export default {
           uuid: this.uuid,
         })
         .then((res) => {
-          console.log(res)
           this.codeUrl = "data:image/gif;base64," + res.data.data.img;
           this.uuid = res.data.data.uuid;
-          console.log(this.codeUrl)
         });
     },
     handleClose(done) {
@@ -128,11 +124,35 @@ export default {
         console.error("下载ZIP文件失败", error);
       }
     },
+    confirmUpload() {
+      axios
+        .post("http://localhost:8090/code/checkCode", {
+          uuid: this.uuid,
+          img: this.resCode,
+        })
+        .then((res) => {
+          if (res.data.data == true) {
+            //验证码验证通过
+            this.$refs.upload.submit();
+            this.path = 1;
+            this.$message({
+              message: "验证码通过，开始上传",
+              type: "success",
+            });
+          } else {
+            //验证码验证不通过
+            this.$message({
+              message: "验证码错误",
+              type: "error",
+            });
+          }
+        });
+      this.resCode = "";
+      this.dialogVisible = false;
+    },
     async upload() {
       if (this.$refs.upload.uploadFiles.length > 0) {
         this.dialogVisible = true;
-        // this.$refs.upload.submit();
-        this.path = 1;
       } else {
         this.$message({
           message: "请先添加文件",
@@ -218,5 +238,18 @@ img {
   width: 300px;
   left: -1%;
   bottom: 8%;
+}
+.code {
+  display: inline-block;
+}
+
+.code-image {
+  display: block;
+  margin: 10px;
+  width: 130px;
+  height: 50px;
+  line-height: 50px;
+  margin-left: 25%;
+  cursor: pointer;
 }
 </style>

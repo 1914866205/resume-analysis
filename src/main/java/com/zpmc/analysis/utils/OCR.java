@@ -16,11 +16,11 @@ import java.util.Base64;
 
 public class OCR {
     //我的
-//    public static final String API_KEY = "TawdbBcL4ks4kG11LBdk7GST";
-//    public static final String SECRET_KEY = "BzmrRZP56vGa6yXtNb3rfLkCoMR4ppfS";
+    public static final String API_KEY = "TawdbBcL4ks4kG11LBdk7GST";
+    public static final String SECRET_KEY = "BzmrRZP56vGa6yXtNb3rfLkCoMR4ppfS";
     // 阿琴的
-    public static final String API_KEY = "9BGTVWPHvW0zXQxdWhM0Rx9v";
-    public static final String SECRET_KEY = "wrKBmZGqibS2P6wLlOnBM66VgGNEeX00";
+//    public static final String API_KEY = "9BGTVWPHvW0zXQxdWhM0Rx9v";
+//    public static final String SECRET_KEY = "wrKBmZGqibS2P6wLlOnBM66VgGNEeX00";
 
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
 

@@ -262,7 +262,7 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         //一般来说，姓名会出现在前几行
-        String namePre = "李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范石姚谭廖邹熊陆郝孔白崔康毛邱秦史顾侯邵孟龙万段漕钱汤尹黎易常武乔贺赖龚文庞樊兰殷施陶洪翟安颜倪严牛温芦季俞章鲁葛伍韦申尤毕聂丛焦向柳邢路岳齐沿梅莫庄辛祝左涂谷祁时舒耿牟卜路詹关苗凌费纪靳盛童欧甄项曲成游阳裴席卫查屈鲍位覃霍翁隋植甘薄单包司柏宁柯阮桂闵欧阳解强柴华车冉房边辜吉饶刁瞿戚丘古米池滕晋苑邬臧畅宫来嵺苟全褚廉娄盖符奚木穆燕郎邸冀谈姬屠连郜晏栾郁商蒙喻揭窦迟宇敖糜鄢冷卓花仇艾蓝都巩稽井练仲乐虞卞封竺冼官衣楚佟栗匡宗台巫鞠僧桑荆谌银扬明沙薄伏岑习胥保和蔺";
+        String namePre = "李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范石姚谭廖邹熊陆郝孔白崔康毛邱秦史顾侯邵孟龙万段漕钱汤尹黎易常武乔贺赖龚文庞樊兰殷施陶洪翟安颜倪严牛温芦季俞章鲁葛伍韦申尤毕聂丛焦向柳邢路岳齐沿梅莫庄辛祝左涂谷祁舒耿牟卜路詹关苗凌费纪靳盛童欧甄项曲成游阳裴席卫查屈鲍覃霍翁隋植甘薄单包柏宁柯阮桂闵欧阳解强柴车冉房边辜吉饶刁瞿戚丘古米池滕晋苑邬臧畅宫来嵺苟全褚廉娄盖符奚木穆燕郎邸冀谈姬屠连郜晏栾郁商蒙喻揭窦迟宇敖糜鄢冷卓花仇艾蓝都巩稽井练仲乐虞卞封竺冼官衣楚佟栗匡宗台巫鞠僧桑荆谌银扬明沙薄伏岑习胥保和蔺";
         // 定义正则表达式来匹配包含姓名的行，一般来说前一百个字符里就有姓名
         String newRes = result;
         char[] chars = newRes.toCharArray();
@@ -400,7 +400,58 @@ public class ResumeServiceImpl implements ResumeService {
         return null;
     }
 
-    public static void main(String[] args) throws IOException {
-        analysis("C:\\Users\\nitaotao\\Desktop\\root");
+    /**
+     * 合同解析重命名
+     * C:\Users\nitaotao\Desktop\root\刘鲁松 2022年7月6日-2025年7月5日
+     * C:\Users\nitaotao\Desktop\root\吴涛涛 2023年7月8日 无固定
+     * @param filePath
+     * @throws IOException
+     */
+    public static void analysisContact(String filePath) throws IOException {
+        File root = new File(filePath);
+        if (root.exists() && root.isDirectory()) {
+            File[] files = root.listFiles();
+            for (File file : files) {
+                //调用百度OCR
+                String result = OCR.getResult("C:\\Users\\nitaotao\\Desktop\\root\\" + file.getName());
+                String pattern = "应聘签约人(\\S+)";
+                Pattern regexPattern = Pattern.compile(pattern);
+                Matcher matcher = regexPattern.matcher(result);
+                String name = "识别失败";
+                if (matcher.find()) {
+                    String applicantName = matcher.group(1);
+                    name = applicantName.split("身")[0];
+                }
+                String time = "识别失败";
+                if (result.contains("无固定")) {
+                    // 使用正则表达式匹配日期
+                    String pattern2 = "\\d{4}年\\d{1,2}月\\d{1,2}日";
+                    Pattern regexPattern2 = Pattern.compile(pattern2);
+                    Matcher matcher2 = regexPattern2.matcher(result);
+                    String date = "识别失败";
+                    if (matcher2.find()) {
+                        date = matcher2.group();
+                    }
+                    time = date + " 无固定";
+                } else {
+                    // 使用正则表达式匹配日期范围
+                    String pattern2 = "\\d{4}年\\d{1,2}月\\d{1,2}日起\\d{4}年\\d{1,2}月\\d{1,2}日";
+                    Pattern regexPattern2 = Pattern.compile(pattern2);
+                    Matcher matcher2 = regexPattern2.matcher(result);
+
+                    if (matcher2.find()) {
+                        time = matcher2.group().replace("起", "-");
+                    }
+                }
+                String fileName = name + " " + time;
+                System.out.println(filePath + "\\" + fileName);
+                file.renameTo(new File(filePath + "\\" + fileName + ".pdf"));
+            }
+        }
     }
+
+    public static void main(String[] args) throws IOException {
+        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
+    }
+
 }

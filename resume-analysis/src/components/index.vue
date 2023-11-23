@@ -1,7 +1,7 @@
 
 <template>
   <div class="main">
-    <div class="logo"><img src="../assets/imgs/Logo.png" width="180px" /></div>
+    <!-- <div class="logo"><img src="../assets/imgs/Logo.png" width="180px" /></div> -->
     <div class="font"><span>简历解析服务</span></div>
     <div class="tip">
       <pre>
@@ -12,7 +12,7 @@
 
     <el-upload
       class="upload"
-      action="http://localhost:8090/resume/import"
+      action="http://47.101.190.57:8090/resume/import"
       :on-preview="handlePreview"
       ref="upload"
       accept=".zip"
@@ -83,7 +83,7 @@ export default {
   methods: {
     getCode() {
       axios
-        .post("http://localhost:8090/code/getCode", {
+        .post("http://47.101.190.57:8090/code/getCode", {
           uuid: this.uuid,
         })
         .then((res) => {
@@ -103,7 +103,7 @@ export default {
     async download() {
       try {
         const response = await axios.get(
-          "http://localhost:8090/resume/export/" + this.path,
+          "http://47.101.190.57:8090/resume/export/" + this.path,
           {
             responseType: "blob", // 设置响应数据类型为二进制
           }
@@ -126,7 +126,7 @@ export default {
     },
     confirmUpload() {
       axios
-        .post("http://localhost:8090/code/checkCode", {
+        .post("http://47.101.190.57:8090/code/checkCode", {
           uuid: this.uuid,
           img: this.resCode,
         })
@@ -216,6 +216,7 @@ img {
   line-height: 110px;
   overflow: hidden;
   margin: 20px auto 0 auto;
+  margin-top:100px;
   /* 字符间隔 */
   letter-spacing: 20px;
 }

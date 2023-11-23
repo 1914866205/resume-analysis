@@ -30,7 +30,7 @@ public class ResumeServiceImpl implements ResumeService {
     public synchronized Result importData(MultipartFile file) throws IOException {
         long currentTimeMillis = System.currentTimeMillis();
         //   file//时间//root
-        String filePath = "file//" + currentTimeMillis + "//" + file.getOriginalFilename();
+        String filePath = "file/" + currentTimeMillis + "/" + file.getOriginalFilename();
         String fileOriginalName = file.getOriginalFilename().split("\\.")[0];
         //获取文件名
         InputStream path = null;
@@ -39,7 +39,7 @@ public class ResumeServiceImpl implements ResumeService {
         try {
             path = file.getInputStream();
             fis = (FileInputStream) path;
-            File dir = new File("file//" + currentTimeMillis);
+            File dir = new File("file/" + currentTimeMillis);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -59,11 +59,11 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         //解压文件
-        ZipUtils.unZip(filePath, "file//" + currentTimeMillis, "gbk");
+        ZipUtils.unZip(filePath, "file/" + currentTimeMillis, "gbk");
         //处理完去压缩 删除中间文件夹
-        analysis("file\\" + currentTimeMillis + "\\" + fileOriginalName);
-        FileOutputStream fileOutputStream = new FileOutputStream("file\\" + currentTimeMillis + "\\result_" + fileOriginalName + ".zip");
-        ZipUtils.toZip("file\\" + currentTimeMillis + "\\" + fileOriginalName, fileOutputStream, true, "gbk");
+        analysis("file/" + currentTimeMillis + "/" + fileOriginalName);
+        FileOutputStream fileOutputStream = new FileOutputStream("file/" + currentTimeMillis + "/result_" + fileOriginalName + ".zip");
+        ZipUtils.toZip("file/" + currentTimeMillis + "/" + fileOriginalName, fileOutputStream, true, "gbk");
         fileOutputStream.close();
         return Result.success(currentTimeMillis + "result_" + fileOriginalName);
     }
@@ -76,13 +76,13 @@ public class ResumeServiceImpl implements ResumeService {
             if (chars[i] <= '9') {
                 targetPath.append(chars[i]);
             } else {
-                targetPath.append("\\");
+                targetPath.append("/");
                 targetPath.append(path.substring(i));
                 break;
             }
         }
         System.out.println(targetPath);
-        File file = new File("file\\" + targetPath + ".zip");
+        File file = new File("file/" + targetPath + ".zip");
         if (file.exists()) {
             response.setContentType("application/zip");
             response.addHeader("Content-Disposition", "attachment; filename=analysis_result.zip");
@@ -153,7 +153,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         // 创建第二行
         int rowIndex = 1;
-        String partName = folderPath.split("\\\\")[folderPath.split("\\\\").length - 1];
+        String partName = folderPath.split("/")[folderPath.split("/").length - 1];
         File folder = new File(folderPath);
         // 检查文件夹是否存在
         if (folder.exists() && folder.isDirectory()) {
@@ -162,8 +162,8 @@ public class ResumeServiceImpl implements ResumeService {
                 for (File file : files) {
                     if (file.isFile()) {
                         row = sheet.createRow(rowIndex);
-                        String newName = getInfo(partName, folderPath + "\\" + file.getName(), row, cell);
-                        file.renameTo(new File(folderPath + "\\" + newName));
+                        String newName = getInfo(partName, folderPath + "/" + file.getName(), row, cell);
+                        file.renameTo(new File(folderPath + "/" + newName));
                         rowIndex++;
                     }
                 }
@@ -174,7 +174,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         try {
             // 导出工作簿到文件
-            FileOutputStream fileOut = new FileOutputStream(rootPath + "\\" + partName + ".xlsx");
+            FileOutputStream fileOut = new FileOutputStream(rootPath + "/" + partName + ".xlsx");
             workbook.write(fileOut);
             fileOut.close();
 
@@ -451,7 +451,8 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     public static void main(String[] args) throws IOException {
-        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
+        analysis("C:\\Users\\nitaotao\\Desktop\\root");
+//        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
     }
 
 }

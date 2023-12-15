@@ -85,7 +85,7 @@ public class ResumeServiceImpl implements ResumeService {
         File file = new File("file/" + targetPath + ".zip");
         if (file.exists()) {
             response.setContentType("application/zip");
-            response.addHeader("Content-Disposition", "attachment; filename=analysis_result.zip");
+            response.addHeader("Content-Disposition", "attachment; filename=analysis_resume.zip");
             FileInputStream fileInputStream = new FileInputStream(file);
             ServletOutputStream outputStream = response.getOutputStream();
             byte[] buffer = new byte[1024];
@@ -191,6 +191,7 @@ public class ResumeServiceImpl implements ResumeService {
         //部门名称
         cell = row.createCell(0);
         cell.setCellValue(partName);
+        //        cell.setCellValue(partName.split("\\\\")[3]);
         //姓名
         cell = row.createCell(1);
         cell.setCellValue(getName(result));
@@ -451,8 +452,8 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     public static void main(String[] args) throws IOException {
-        analysis("C:\\Users\\nitaotao\\Desktop\\root");
-//        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
+//        analysis("C:\\Users\\nitaotao\\Desktop\\root");
+        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
     }
 
 }

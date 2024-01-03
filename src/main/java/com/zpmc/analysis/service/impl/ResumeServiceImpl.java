@@ -237,7 +237,9 @@ public class ResumeServiceImpl implements ResumeService {
         //有 姓名: 的先查姓名
         int nameIndex = result.indexOf("姓名");
         if (nameIndex != -1) {
-            result = result.substring(nameIndex + 2, nameIndex + 10);
+//            result = result.substring(nameIndex + 2, nameIndex + 10);
+            //针对职称的查找
+            result = result.substring(nameIndex + 2, nameIndex + 100);
             char[] charsArr = result.toCharArray();
             for (int start = 0; start < charsArr.length; start++) {
                 if (isChineseCharacter(charsArr[start])) {
@@ -390,5 +392,9 @@ public class ResumeServiceImpl implements ResumeService {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) throws IOException {
+        analysis("D:\\360MoveData\\Users\\lenovo\\Desktop\\root");
     }
 }

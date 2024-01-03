@@ -246,7 +246,12 @@ public class ResumeServiceImpl implements ResumeService {
         //有 姓名: 的先查姓名
         int nameIndex = result.indexOf("姓名");
         if (nameIndex != -1) {
-            result = result.substring(nameIndex + 2, nameIndex + 10);
+//            result = result.substring(nameIndex + 2, nameIndex + 10);
+
+            //针对  职称评审 的 pdf 的合并，需要往后多截取点字符串
+            result = result.substring(nameIndex + 2, nameIndex + 100);
+
+
             char[] charsArr = result.toCharArray();
             for (int start = 0; start < charsArr.length; start++) {
                 if (isChineseCharacter(charsArr[start])) {

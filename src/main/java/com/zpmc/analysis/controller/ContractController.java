@@ -1,7 +1,7 @@
 package com.zpmc.analysis.controller;
 
 import com.zpmc.analysis.common.Result;
-import com.zpmc.analysis.service.ResumeService;
+import com.zpmc.analysis.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,23 +11,23 @@ import java.io.IOException;
 
 /**
  * @author: 倪涛涛
- * @create: 2023-10-19 12:05
+ * @create: 2023-12-14 15:33
  **/
 @RestController
-@RequestMapping("/resume")
-public class ResumeController {
+@RequestMapping("/contract")
+public class ContractController {
 
     @Autowired
-    ResumeService resumeService;
+    ContractService contractService;
 
 
     @PostMapping("/import")
     public Result importData(@RequestParam(value = "file") MultipartFile file) throws IOException {
-        return resumeService.importData(file);
+        return contractService.importData(file);
     }
 
     @GetMapping("/export/{path}")
     public void exportData(HttpServletResponse response, @PathVariable String path) throws IOException {
-        resumeService.exportData(response, path);
+        contractService.exportData(response, path);
     }
 }

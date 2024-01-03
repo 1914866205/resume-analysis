@@ -30,7 +30,7 @@ public class ResumeServiceImpl implements ResumeService {
     public synchronized Result importData(MultipartFile file) throws IOException {
         long currentTimeMillis = System.currentTimeMillis();
         //   file//时间//root
-        String filePath = "file//" + currentTimeMillis + "//" + file.getOriginalFilename();
+        String filePath = "file/" + currentTimeMillis + "/" + file.getOriginalFilename();
         String fileOriginalName = file.getOriginalFilename().split("\\.")[0];
         //获取文件名
         InputStream path = null;
@@ -39,7 +39,7 @@ public class ResumeServiceImpl implements ResumeService {
         try {
             path = file.getInputStream();
             fis = (FileInputStream) path;
-            File dir = new File("file//" + currentTimeMillis);
+            File dir = new File("file/" + currentTimeMillis);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -59,11 +59,11 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         //解压文件
-        ZipUtils.unZip(filePath, "file//" + currentTimeMillis, "gbk");
+        ZipUtils.unZip(filePath, "file/" + currentTimeMillis, "gbk");
         //处理完去压缩 删除中间文件夹
-        analysis("file\\" + currentTimeMillis + "\\" + fileOriginalName);
-        FileOutputStream fileOutputStream = new FileOutputStream("file\\" + currentTimeMillis + "\\result_" + fileOriginalName + ".zip");
-        ZipUtils.toZip("file\\" + currentTimeMillis + "\\" + fileOriginalName, fileOutputStream, true, "gbk");
+        analysis("file/" + currentTimeMillis + "/" + fileOriginalName);
+        FileOutputStream fileOutputStream = new FileOutputStream("file/" + currentTimeMillis + "/result_" + fileOriginalName + ".zip");
+        ZipUtils.toZip("file/" + currentTimeMillis + "/" + fileOriginalName, fileOutputStream, true, "gbk");
         fileOutputStream.close();
         return Result.success(currentTimeMillis + "result_" + fileOriginalName);
     }
@@ -75,17 +75,17 @@ public class ResumeServiceImpl implements ResumeService {
         for (int i = 0; i < chars.length; i++) {
             if (chars[i] <= '9') {
                 targetPath.append(chars[i]);
-            }else{
-                targetPath.append("\\");
+            } else {
+                targetPath.append("/");
                 targetPath.append(path.substring(i));
                 break;
             }
         }
         System.out.println(targetPath);
-        File file = new File("file\\" + targetPath + ".zip");
+        File file = new File("file/" + targetPath + ".zip");
         if (file.exists()) {
             response.setContentType("application/zip");
-            response.addHeader("Content-Disposition", "attachment; filename=analysis_result.zip");
+            response.addHeader("Content-Disposition", "attachment; filename=analysis_resume.zip");
             FileInputStream fileInputStream = new FileInputStream(file);
             ServletOutputStream outputStream = response.getOutputStream();
             byte[] buffer = new byte[1024];
@@ -153,7 +153,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         // 创建第二行
         int rowIndex = 1;
-        String partName = folderPath.split("\\\\")[folderPath.split("\\\\").length - 1];
+        String partName = folderPath.split("/")[folderPath.split("/").length - 1];
         File folder = new File(folderPath);
         // 检查文件夹是否存在
         if (folder.exists() && folder.isDirectory()) {
@@ -162,8 +162,8 @@ public class ResumeServiceImpl implements ResumeService {
                 for (File file : files) {
                     if (file.isFile()) {
                         row = sheet.createRow(rowIndex);
-                        String newName = getInfo(partName, folderPath + "\\" + file.getName(), row, cell);
-                        file.renameTo(new File(folderPath + "\\" + newName));
+                        String newName = getInfo(partName, folderPath + "/" + file.getName(), row, cell);
+                        file.renameTo(new File(folderPath + "/" + newName));
                         rowIndex++;
                     }
                 }
@@ -174,7 +174,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         try {
             // 导出工作簿到文件
-            FileOutputStream fileOut = new FileOutputStream(rootPath + "\\" + partName + ".xlsx");
+            FileOutputStream fileOut = new FileOutputStream(rootPath + "/" + partName + ".xlsx");
             workbook.write(fileOut);
             fileOut.close();
 
@@ -188,26 +188,35 @@ public class ResumeServiceImpl implements ResumeService {
     public static String getInfo(String partName, String filePath, Row row, Cell cell) throws IOException {
         //调用百度OCR
         String result = OCR.getResult(filePath);
+        //部门名称
         cell = row.createCell(0);
         cell.setCellValue(partName);
-
+        //        cell.setCellValue(partName.split("\\\\")[3]);
+        //姓名
         cell = row.createCell(1);
         cell.setCellValue(getName(result));
+        //性别
         cell = row.createCell(2);
         cell.setCellValue(getSex(result));
+        //手机号
         cell = row.createCell(3);
+        cell.setCellValue(getPhoneNumber(result));
+        //学校
+        cell = row.createCell(4);
         Set school = getSchool(result);
         cell.setCellValue(String.valueOf(school).substring(1, String.valueOf(school).length() - 1));
-        cell = row.createCell(4);
-        String sc = checkSchool(school);
-        cell.setCellValue(sc != null ? sc : "不在");
+        //最高学历
         cell = row.createCell(5);
         cell.setCellValue(findHighestEducationLevel(result));
+        //专业
         cell = row.createCell(6);
         Set speciality = getSpeciality(result);
         cell.setCellValue(String.valueOf(speciality).substring(1, String.valueOf(speciality).length() - 1));
+        //检查院校
         cell = row.createCell(7);
-        cell.setCellValue(getPhoneNumber(result));
+        String sc = checkSchool(school);
+        cell.setCellValue(sc != null ? sc : "不在");
+        //邮箱
         cell = row.createCell(8);
         cell.setCellValue(getEmail(result));
         String name = getName(result);
@@ -237,9 +246,7 @@ public class ResumeServiceImpl implements ResumeService {
         //有 姓名: 的先查姓名
         int nameIndex = result.indexOf("姓名");
         if (nameIndex != -1) {
-//            result = result.substring(nameIndex + 2, nameIndex + 10);
-            //针对职称的查找
-            result = result.substring(nameIndex + 2, nameIndex + 100);
+            result = result.substring(nameIndex + 2, nameIndex + 10);
             char[] charsArr = result.toCharArray();
             for (int start = 0; start < charsArr.length; start++) {
                 if (isChineseCharacter(charsArr[start])) {
@@ -256,7 +263,7 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         //一般来说，姓名会出现在前几行
-        String namePre = "李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范石姚谭廖邹熊陆郝孔白崔康毛邱秦史顾侯邵孟龙万段漕钱汤尹黎易常武乔贺赖龚文庞樊兰殷施陶洪翟安颜倪严牛温芦季俞章鲁葛伍韦申尤毕聂丛焦向柳邢路岳齐沿梅莫庄辛祝左涂谷祁时舒耿牟卜路詹关苗凌费纪靳盛童欧甄项曲成游阳裴席卫查屈鲍位覃霍翁隋植甘薄单包司柏宁柯阮桂闵欧阳解强柴华车冉房边辜吉饶刁瞿戚丘古米池滕晋苑邬臧畅宫来嵺苟全褚廉娄盖符奚木穆燕郎邸冀谈姬屠连郜晏栾郁商蒙喻揭窦迟宇敖糜鄢冷卓花仇艾蓝都巩稽井练仲乐虞卞封竺冼原官衣楚佟栗匡宗台巫鞠僧桑荆谌银扬明沙薄伏岑习胥保和蔺";
+        String namePre = "李王张刘陈杨赵黄周吴徐孙胡朱高林何郭马罗梁宋郑谢韩唐冯于董萧曹袁邓许傅沈曾彭吕苏卢蒋蔡贾丁魏薛叶阎余潘杜戴夏钟汪田任姜范石姚谭廖邹熊陆郝孔白崔康毛邱秦史顾侯邵孟龙万段漕钱汤尹黎易常武乔贺赖龚文庞樊兰殷施陶洪翟安颜倪严牛温芦季俞章鲁葛伍韦申尤毕聂丛焦向柳邢路岳齐沿梅莫庄辛祝左涂谷祁舒耿牟卜路詹关苗凌费纪靳盛童欧甄项曲成游阳裴席卫查屈鲍覃霍翁隋植甘薄单包柏宁柯阮桂闵欧阳解强柴车冉房边辜吉饶刁瞿戚丘古米池滕晋苑邬臧畅宫来嵺苟全褚廉娄盖符奚木穆燕郎邸冀谈姬屠连郜晏栾郁商蒙喻揭窦迟宇敖糜鄢冷卓花仇艾蓝都巩稽井练仲乐虞卞封竺冼官衣楚佟栗匡宗台巫鞠僧桑荆谌银扬明沙薄伏岑习胥保和蔺";
         // 定义正则表达式来匹配包含姓名的行，一般来说前一百个字符里就有姓名
         String newRes = result;
         char[] chars = newRes.toCharArray();
@@ -394,7 +401,59 @@ public class ResumeServiceImpl implements ResumeService {
         return null;
     }
 
-    public static void main(String[] args) throws IOException {
-        analysis("D:\\360MoveData\\Users\\lenovo\\Desktop\\root");
+    /**
+     * 合同解析重命名
+     * C:\Users\nitaotao\Desktop\root\刘鲁松 2022年7月6日-2025年7月5日
+     * C:\Users\nitaotao\Desktop\root\吴涛涛 2023年7月8日 无固定
+     * @param filePath
+     * @throws IOException
+     */
+    public static void analysisContact(String filePath) throws IOException {
+        File root = new File(filePath);
+        if (root.exists() && root.isDirectory()) {
+            File[] files = root.listFiles();
+            for (File file : files) {
+                //调用百度OCR
+                String result = OCR.getResult("C:\\Users\\nitaotao\\Desktop\\root\\" + file.getName());
+                String pattern = "应聘签约人(\\S+)";
+                Pattern regexPattern = Pattern.compile(pattern);
+                Matcher matcher = regexPattern.matcher(result);
+                String name = "识别失败";
+                if (matcher.find()) {
+                    String applicantName = matcher.group(1);
+                    name = applicantName.split("身")[0];
+                }
+                String time = "识别失败";
+                if (result.contains("无固定")) {
+                    // 使用正则表达式匹配日期
+                    String pattern2 = "\\d{4}年\\d{1,2}月\\d{1,2}日";
+                    Pattern regexPattern2 = Pattern.compile(pattern2);
+                    Matcher matcher2 = regexPattern2.matcher(result);
+                    String date = "识别失败";
+                    if (matcher2.find()) {
+                        date = matcher2.group();
+                    }
+                    time = date + " 无固定";
+                } else {
+                    // 使用正则表达式匹配日期范围
+                    String pattern2 = "\\d{4}年\\d{1,2}月\\d{1,2}日起\\d{4}年\\d{1,2}月\\d{1,2}日";
+                    Pattern regexPattern2 = Pattern.compile(pattern2);
+                    Matcher matcher2 = regexPattern2.matcher(result);
+
+                    if (matcher2.find()) {
+                        time = matcher2.group().replace("起", "-");
+                    }
+                }
+                String fileName = name + " " + time;
+                System.out.println(filePath + "\\" + fileName);
+                file.renameTo(new File(filePath + "\\" + fileName + ".pdf"));
+            }
+        }
     }
+
+    public static void main(String[] args) throws IOException {
+//        analysis("C:\\Users\\nitaotao\\Desktop\\root");
+        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
+    }
+
 }

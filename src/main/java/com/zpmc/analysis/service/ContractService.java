@@ -8,9 +8,9 @@ import java.io.IOException;
 
 /**
  * @author: 倪涛涛
- * @create: 2023-10-19 12:11
+ * @create: 2023-12-14 15:34
  **/
-public interface ResumeService {
+public interface ContractService {
     Result importData(MultipartFile file) throws IOException;
 
     void exportData(HttpServletResponse response, String path) throws IOException;

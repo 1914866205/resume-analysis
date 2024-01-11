@@ -59,8 +59,10 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         //解压文件
-        ZipUtils.unZip(filePath, "file/" + currentTimeMillis, "gbk");
+        System.out.println("解压路径"+filePath);
+        ZipUtils.unZip(filePath, "file/" + currentTimeMillis+ "/" + fileOriginalName, "gbk");
         //处理完去压缩 删除中间文件夹
+        System.out.println("处理文件路径"+"file/" + currentTimeMillis + "/" + fileOriginalName);
         analysis("file/" + currentTimeMillis + "/" + fileOriginalName);
         FileOutputStream fileOutputStream = new FileOutputStream("file/" + currentTimeMillis + "/result_" + fileOriginalName + ".zip");
         ZipUtils.toZip("file/" + currentTimeMillis + "/" + fileOriginalName, fileOutputStream, true, "gbk");
@@ -246,10 +248,10 @@ public class ResumeServiceImpl implements ResumeService {
         //有 姓名: 的先查姓名
         int nameIndex = result.indexOf("姓名");
         if (nameIndex != -1) {
-//            result = result.substring(nameIndex + 2, nameIndex + 10);
+            result = result.substring(nameIndex + 2, nameIndex + 10);
 
             //针对  职称评审 的 pdf 的合并，需要往后多截取点字符串
-            result = result.substring(nameIndex + 2, nameIndex + 100);
+//            result = result.substring(nameIndex + 2, nameIndex + 100);
 
 
             char[] charsArr = result.toCharArray();

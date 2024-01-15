@@ -141,15 +141,15 @@ public class ResumeServiceImpl implements ResumeService {
         cell = row.createCell(2);
         cell.setCellValue("性别");
         cell = row.createCell(3);
-        cell.setCellValue("学校");
+        cell.setCellValue("电话");
         cell = row.createCell(4);
-        cell.setCellValue("学校是否在名录内");
+        cell.setCellValue("学校");
         cell = row.createCell(5);
         cell.setCellValue("学历");
         cell = row.createCell(6);
         cell.setCellValue("专业");
         cell = row.createCell(7);
-        cell.setCellValue("电话");
+        cell.setCellValue("学校是否在名录内");
         cell = row.createCell(8);
         cell.setCellValue("邮箱");
 
@@ -224,15 +224,15 @@ public class ResumeServiceImpl implements ResumeService {
         String name = getName(result);
 //        System.out.println(result);
         System.out.println("提取的姓名为：" + name);
-//        System.out.println("提取的性别为：" + getSex(result));
-//        System.out.println("提取的最高学历：" + findHighestEducationLevel(result));
-//        System.out.print("提取的学校：" + school);
-//        System.out.println(sc == null ? "不在" : sc + "在名录内");
-//        System.out.println("提取的学历：" + findHighestEducationLevel(result));
-//        System.out.println("提取的专业：" + getSpeciality(result));
-//        System.out.println("提取的手机号为：" + getPhoneNumber(result));
-//        System.out.println("提取的邮箱：" + getEmail(result));
-//        System.out.println("-----------------------------");
+        System.out.println("提取的性别为：" + getSex(result));
+        System.out.println("提取的最高学历：" + findHighestEducationLevel(result));
+        System.out.print("提取的学校：" + school);
+        System.out.println(sc == null ? "不在" : sc + "在名录内");
+        System.out.println("提取的学历：" + findHighestEducationLevel(result));
+        System.out.println("提取的专业：" + getSpeciality(result));
+        System.out.println("提取的手机号为：" + getPhoneNumber(result));
+        System.out.println("提取的邮箱：" + getEmail(result));
+        System.out.println("-----------------------------");
         return name + " " + (sc == null ? "不在名录内" : sc) + ".pdf";
     }
 
@@ -459,8 +459,8 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     public static void main(String[] args) throws IOException {
-//        analysis("C:\\Users\\nitaotao\\Desktop\\root");
-        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
+        analysis("D:\\360MoveData\\Users\\lenovo\\Desktop\\root");
+//        analysisContact("C:\\Users\\nitaotao\\Desktop\\root");
     }
 
 }

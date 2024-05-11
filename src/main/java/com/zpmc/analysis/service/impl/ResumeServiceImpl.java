@@ -176,7 +176,10 @@ public class ResumeServiceImpl implements ResumeService {
 
         try {
             // 导出工作簿到文件
-            FileOutputStream fileOut = new FileOutputStream(rootPath + "/" + partName + ".xlsx");
+//            FileOutputStream fileOut = new FileOutputStream(rootPath + "/" + partName + ".xlsx");
+
+            //windows环境
+            FileOutputStream fileOut = new FileOutputStream( partName + ".xlsx");
             workbook.write(fileOut);
             fileOut.close();
 
